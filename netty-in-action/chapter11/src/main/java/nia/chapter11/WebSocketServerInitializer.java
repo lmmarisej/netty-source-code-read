@@ -28,29 +28,23 @@ public class WebSocketServerInitializer extends ChannelInitializer<Channel> {
             new ContinuationFrameHandler());
     }
 
-    public static final class TextFrameHandler extends
-        SimpleChannelInboundHandler<TextWebSocketFrame> {
+    public static final class TextFrameHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
         @Override
-        public void channelRead0(ChannelHandlerContext ctx,
-            TextWebSocketFrame msg) throws Exception {
+        public void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
             // Handle text frame
         }
     }
 
-    public static final class BinaryFrameHandler extends
-        SimpleChannelInboundHandler<BinaryWebSocketFrame> {
+    public static final class BinaryFrameHandler extends SimpleChannelInboundHandler<BinaryWebSocketFrame> {
         @Override
-        public void channelRead0(ChannelHandlerContext ctx,
-            BinaryWebSocketFrame msg) throws Exception {
+        public void channelRead0(ChannelHandlerContext ctx, BinaryWebSocketFrame msg) throws Exception {
             // Handle binary frame
         }
     }
 
-    public static final class ContinuationFrameHandler extends
-        SimpleChannelInboundHandler<ContinuationWebSocketFrame> {
+    public static final class ContinuationFrameHandler extends SimpleChannelInboundHandler<ContinuationWebSocketFrame> {
         @Override
-        public void channelRead0(ChannelHandlerContext ctx,
-            ContinuationWebSocketFrame msg) throws Exception {
+        public void channelRead0(ChannelHandlerContext ctx, ContinuationWebSocketFrame msg) throws Exception {
             // Handle continuation frame
         }
     }

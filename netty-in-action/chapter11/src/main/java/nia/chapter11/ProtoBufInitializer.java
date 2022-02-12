@@ -21,17 +21,15 @@ public class ProtoBufInitializer extends ChannelInitializer<Channel> {
     @Override
     protected void initChannel(Channel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
-        pipeline.addLast(new ProtobufVarint32FrameDecoder());
-        pipeline.addLast(new ProtobufEncoder());
-        pipeline.addLast(new ProtobufDecoder(lite));
-        pipeline.addLast(new ObjectHandler());
+        pipeline.addLast(new ProtobufVarint32FrameDecoder());       // 添加以分隔帧，分割接收到的消息
+        pipeline.addLast(new ProtobufEncoder());        // 消息编码
+        pipeline.addLast(new ProtobufDecoder(lite));    // 消息解码
+        pipeline.addLast(new ObjectHandler());      // 处理解码消息
     }
 
-    public static final class ObjectHandler
-        extends SimpleChannelInboundHandler<Object> {
+    public static final class ObjectHandler extends SimpleChannelInboundHandler<Object> {
         @Override
-        public void channelRead0(ChannelHandlerContext ctx, Object msg)
-            throws Exception {
+        public void channelRead0(ChannelHandlerContext ctx, Object msg) {
             // Do something with the object
         }
     }

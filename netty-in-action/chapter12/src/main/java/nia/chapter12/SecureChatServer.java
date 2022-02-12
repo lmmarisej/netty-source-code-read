@@ -22,8 +22,7 @@ public class SecureChatServer extends ChatServer {
     }
 
     @Override
-    protected ChannelInitializer<Channel> createInitializer(
-        ChannelGroup group) {
+    protected ChannelInitializer<Channel> createInitializer(ChannelGroup group) {
         return new SecureChatServerInitializer(group, context);
     }
 
@@ -34,16 +33,10 @@ public class SecureChatServer extends ChatServer {
         }
         int port = Integer.parseInt(args[0]);
         SelfSignedCertificate cert = new SelfSignedCertificate();
-        SslContext context = SslContext.newServerContext(
-                cert.certificate(), cert.privateKey());
+        SslContext context = SslContext.newServerContext(cert.certificate(), cert.privateKey());
         final SecureChatServer endpoint = new SecureChatServer(context);
         ChannelFuture future = endpoint.start(new InetSocketAddress(port));
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                endpoint.destroy();
-            }
-        });
+        Runtime.getRuntime().addShutdownHook(new Thread(endpoint::destroy));
         future.channel().closeFuture().syncUninterruptibly();
     }
 }

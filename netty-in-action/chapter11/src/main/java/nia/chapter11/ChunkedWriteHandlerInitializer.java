@@ -14,8 +14,7 @@ import java.io.FileInputStream;
  *
  * @author <a href="mailto:norman.maurer@gmail.com">Norman Maurer</a>
  */
-public class ChunkedWriteHandlerInitializer
-    extends ChannelInitializer<Channel> {
+public class ChunkedWriteHandlerInitializer extends ChannelInitializer<Channel> {
     private final File file;
     private final SslContext sslCtx;
     public ChunkedWriteHandlerInitializer(File file, SslContext sslCtx) {
@@ -27,19 +26,18 @@ public class ChunkedWriteHandlerInitializer
     protected void initChannel(Channel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
         pipeline.addLast(new SslHandler(sslCtx.newEngine(ch.alloc())));
+        // 添加 ChunkedWriteHandler 以处理作为 ChunkedInput 传入的数据
         pipeline.addLast(new ChunkedWriteHandler());
+        // 一旦连接建立，WriteStreamHandler 就开始写文件数据
         pipeline.addLast(new WriteStreamHandler());
     }
 
-    public final class WriteStreamHandler
-        extends ChannelInboundHandlerAdapter {
-
+    public final class WriteStreamHandler extends ChannelInboundHandlerAdapter {
+        // 当连接建立时，channelActive() 方法将使用 ChunkedInput 写文件数据
         @Override
-        public void channelActive(ChannelHandlerContext ctx)
-            throws Exception {
+        public void channelActive(ChannelHandlerContext ctx) throws Exception {
             super.channelActive(ctx);
-            ctx.writeAndFlush(
-            new ChunkedStream(new FileInputStream(file)));
+            ctx.writeAndFlush(new ChunkedStream(new FileInputStream(file)));
         }
     }
 }

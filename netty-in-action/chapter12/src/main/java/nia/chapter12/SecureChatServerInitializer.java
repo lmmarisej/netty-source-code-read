@@ -15,8 +15,7 @@ import javax.net.ssl.SSLEngine;
 public class SecureChatServerInitializer extends ChatServerInitializer {
     private final SslContext context;
 
-    public SecureChatServerInitializer(ChannelGroup group,
-        SslContext context) {
+    public SecureChatServerInitializer(ChannelGroup group, SslContext context) {
         super(group);
         this.context = context;
     }

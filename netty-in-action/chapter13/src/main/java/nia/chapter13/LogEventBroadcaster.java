@@ -44,8 +44,8 @@ public class LogEventBroadcaster {
                 raf.seek(pointer);
                 String line;
                 while ((line = raf.readLine()) != null) {
-                    ch.writeAndFlush(new LogEvent(null, -1,
-                    file.getAbsolutePath(), line));
+                    // 用Java对象包裹一行数据，将Java对象广播出去
+                    ch.writeAndFlush(new LogEvent(null, -1, file.getAbsolutePath(), line));
                 }
                 pointer = raf.getFilePointer();
                 raf.close();
@@ -64,12 +64,9 @@ public class LogEventBroadcaster {
     }
 
     public static void main(String[] args) throws Exception {
-        if (args.length != 2) {
-            throw new IllegalArgumentException();
-        }
+        String fileName = "/Users/lmmarise.j/develop/java_web_project_list/netty-in-action/netty-in-action/chapter13/src/main/java/nia/chapter13/package-info.java";
         LogEventBroadcaster broadcaster = new LogEventBroadcaster(
-                new InetSocketAddress("255.255.255.255",
-                    Integer.parseInt(args[0])), new File(args[1]));
+                new InetSocketAddress("255.255.255.255", 8080), new File(fileName));
         try {
             broadcaster.run();
         }

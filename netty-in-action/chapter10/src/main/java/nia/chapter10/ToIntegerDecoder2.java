@@ -12,10 +12,8 @@ import java.util.List;
  * @author <a href="mailto:norman.maurer@gmail.com">Norman Maurer</a>
  */
 public class ToIntegerDecoder2 extends ReplayingDecoder<Void> {
-
     @Override
-    public void decode(ChannelHandlerContext ctx, ByteBuf in,
-        List<Object> out) throws Exception {
+    public void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
         out.add(in.readInt());
     }
 }
