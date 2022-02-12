@@ -8,8 +8,13 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
+import java.lang.reflect.Type;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Listing 4.4 Asynchronous networking with Netty
@@ -18,26 +23,22 @@ import java.nio.charset.Charset;
  */
 public class NettyNioServer {
     public void server(int port) throws Exception {
-        final ByteBuf buf =
-                Unpooled.unreleasableBuffer(Unpooled.copiedBuffer("Hi!\r\n",
-                        Charset.forName("UTF-8")));
+        final ByteBuf buf = Unpooled.unreleasableBuffer(Unpooled.copiedBuffer("Hi!\r\n", StandardCharsets.UTF_8));
         NioEventLoopGroup group = new NioEventLoopGroup();
         try {
             ServerBootstrap b = new ServerBootstrap();
-            b.group(group).channel(NioServerSocketChannel.class)
+            b.group(group)
+                    .channel(NioServerSocketChannel.class)
                     .localAddress(new InetSocketAddress(port))
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                                       @Override
-                                      public void initChannel(SocketChannel ch)
-                                              throws Exception {
-                                              ch.pipeline().addLast(
-                                                  new ChannelInboundHandlerAdapter() {
+                                      public void initChannel(SocketChannel ch) {
+                                          ch.pipeline()
+                                                  .addLast(new ChannelInboundHandlerAdapter() {
                                                       @Override
-                                                      public void channelActive(
-                                                              ChannelHandlerContext ctx) throws Exception {
-                                                                ctx.writeAndFlush(buf.duplicate())
-                                                                  .addListener(
-                                                                          ChannelFutureListener.CLOSE);
+                                                      public void channelActive(ChannelHandlerContext ctx) {
+                                                          ctx.writeAndFlush(buf.duplicate())
+                                                                  .addListener(ChannelFutureListener.CLOSE);
                                                       }
                                                   });
                                       }

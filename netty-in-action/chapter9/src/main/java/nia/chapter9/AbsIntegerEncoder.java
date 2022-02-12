@@ -7,18 +7,14 @@ import io.netty.handler.codec.MessageToMessageEncoder;
 import java.util.List;
 
 /**
- * Listing 9.3 AbsIntegerEncoder
- *
- * @author <a href="mailto:norman.maurer@gmail.com">Norman Maurer</a>
+ * 对出站数据，以4个字节为一组，编码。
  */
-public class AbsIntegerEncoder extends
-    MessageToMessageEncoder<ByteBuf> {
+public class AbsIntegerEncoder extends MessageToMessageEncoder<ByteBuf> {
     @Override
-    protected void encode(ChannelHandlerContext channelHandlerContext,
-        ByteBuf in, List<Object> out) throws Exception {
+    protected void encode(ChannelHandlerContext channelHandlerContext, ByteBuf in, List<Object> out) {
         while (in.readableBytes() >= 4) {
-            int value = Math.abs(in.readInt());
-            out.add(value);
+            int value = Math.abs(in.readInt());     // 将每4个字节转为一个int，取其绝对值
+            out.add(value);     // 写入整数
         }
     }
 }

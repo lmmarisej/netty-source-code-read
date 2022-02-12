@@ -8,9 +8,7 @@ import io.netty.handler.codec.TooLongFrameException;
 import java.util.List;
 
 /**
- * Listing 9.5 FrameChunkDecoder
- *
- * @author <a href="mailto:norman.maurer@gmail.com">Norman Maurer</a>
+ * 数据入站解码。
  */
 public class FrameChunkDecoder extends ByteToMessageDecoder {
     private final int maxFrameSize;
@@ -20,13 +18,10 @@ public class FrameChunkDecoder extends ByteToMessageDecoder {
     }
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf in,
-        List<Object> out)
-        throws Exception {
+    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
         int readableBytes = in.readableBytes();
-        if (readableBytes > maxFrameSize) {
-            // discard the bytes
-            in.clear();
+        if (readableBytes > maxFrameSize) {     // 单次写入的数据不能超过指定字节长度
+            in.clear();   // discard the bytes
             throw new TooLongFrameException();
         }
         ByteBuf buf = in.readBytes(readableBytes);

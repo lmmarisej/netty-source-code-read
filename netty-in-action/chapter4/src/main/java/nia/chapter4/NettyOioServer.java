@@ -10,6 +10,7 @@ import io.netty.channel.socket.oio.OioServerSocketChannel;
 
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Listing 4.3 Blocking networking with Netty
@@ -17,34 +18,28 @@ import java.nio.charset.Charset;
  * @author <a href="mailto:norman.maurer@gmail.com">Norman Maurer</a>
  */
 public class NettyOioServer {
-    public void server(int port)
-            throws Exception {
-        final ByteBuf buf =
-                Unpooled.unreleasableBuffer(Unpooled.copiedBuffer("Hi!\r\n", Charset.forName("UTF-8")));
+    public void server(int port) throws Exception {
+        final ByteBuf buf = Unpooled.unreleasableBuffer(Unpooled.copiedBuffer("Hi!\r\n", StandardCharsets.UTF_8));
         EventLoopGroup group = new OioEventLoopGroup();
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(group)
-                    .channel(OioServerSocketChannel.class)
+                    .channel(OioServerSocketChannel.class)          // 使用阻塞模式
                     .localAddress(new InetSocketAddress(port))
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
-                        public void initChannel(SocketChannel ch)
-                                throws Exception {
+                        public void initChannel(SocketChannel ch) {
                                 ch.pipeline().addLast(
-                                    new ChannelInboundHandlerAdapter() {
+                                    new ChannelInboundHandlerAdapter() {        // 拦截和处理事件
                                         @Override
-                                        public void channelActive(
-                                                ChannelHandlerContext ctx)
-                                                throws Exception {
-                                            ctx.writeAndFlush(buf.duplicate())
-                                                    .addListener(
-                                                            ChannelFutureListener.CLOSE);
+                                        public void channelActive(ChannelHandlerContext ctx) {
+                                            ctx.writeAndFlush(buf.duplicate())      // 消息写给客户端
+                                                    .addListener(ChannelFutureListener.CLOSE);      // 写完成的回调，以便消息一写完就关闭连接
                                         }
                                     });
                         }
                     });
-            ChannelFuture f = b.bind().sync();
+            ChannelFuture f = b.bind().sync();      // 绑定服务器以接受连接
             f.channel().closeFuture().sync();
         } finally {
             group.shutdownGracefully().sync();

@@ -26,17 +26,9 @@ public class ScheduleExamples {
      * Listing 7.2 Scheduling a task with a ScheduledExecutorService
      * */
     public static void schedule() {
-        ScheduledExecutorService executor =
-                Executors.newScheduledThreadPool(10);
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(10);
 
-        ScheduledFuture<?> future = executor.schedule(
-            new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("Now it is 60 seconds later");
-            }
-        }, 60, TimeUnit.SECONDS);
-        //...
+        ScheduledFuture<?> future = executor.schedule(() -> System.out.println("Now it is 60 seconds later"), 60, TimeUnit.SECONDS);
         executor.shutdown();
     }
 
@@ -45,13 +37,7 @@ public class ScheduleExamples {
      * */
     public static void scheduleViaEventLoop() {
         Channel ch = CHANNEL_FROM_SOMEWHERE; // get reference from somewhere
-        ScheduledFuture<?> future = ch.eventLoop().schedule(
-            new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("60 seconds later");
-            }
-        }, 60, TimeUnit.SECONDS);
+        ScheduledFuture<?> future = ch.eventLoop().schedule(() -> System.out.println("60 seconds later"), 60, TimeUnit.SECONDS);
     }
 
     /**
@@ -59,13 +45,9 @@ public class ScheduleExamples {
      * */
     public static void scheduleFixedViaEventLoop() {
         Channel ch = CHANNEL_FROM_SOMEWHERE; // get reference from somewhere
-        ScheduledFuture<?> future = ch.eventLoop().scheduleAtFixedRate(
-           new Runnable() {
-           @Override
-           public void run() {
-               System.out.println("Run every 60 seconds");
-               }
-           }, 60, 60, TimeUnit.SECONDS);
+        ScheduledFuture<?> future = ch
+                .eventLoop().
+                scheduleAtFixedRate(() -> System.out.println("Run every 60 seconds"), 60, 60, TimeUnit.SECONDS);
     }
 
     /**
@@ -74,12 +56,7 @@ public class ScheduleExamples {
     public static void cancelingTaskUsingScheduledFuture(){
         Channel ch = CHANNEL_FROM_SOMEWHERE; // get reference from somewhere
         ScheduledFuture<?> future = ch.eventLoop().scheduleAtFixedRate(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        System.out.println("Run every 60 seconds");
-                    }
-                }, 60, 60, TimeUnit.SECONDS);
+                () -> System.out.println("Run every 60 seconds"), 60, 60, TimeUnit.SECONDS);
         // Some other code that runs...
         boolean mayInterruptIfRunning = false;
         future.cancel(mayInterruptIfRunning);

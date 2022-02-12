@@ -29,17 +29,14 @@ public class InvalidBootstrapClient {
     public void bootstrap() {
         EventLoopGroup group = new NioEventLoopGroup();
         Bootstrap bootstrap = new Bootstrap();
-        bootstrap.group(group).channel(OioSocketChannel.class)
+        bootstrap.group(group).channel(OioSocketChannel.class)      // 与EventLoopGroup前缀不能不相同
             .handler(new SimpleChannelInboundHandler<ByteBuf>() {
                 @Override
-                protected void channelRead0(
-                    ChannelHandlerContext channelHandlerContext,
-                    ByteBuf byteBuf) throws Exception {
+                protected void channelRead0(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) {
                     System.out.println("Received data");
                 }
              });
-        ChannelFuture future = bootstrap.connect(
-                new InetSocketAddress("www.manning.com", 80));
+        ChannelFuture future = bootstrap.connect(new InetSocketAddress("www.manning.com", 80));
         future.syncUninterruptibly();
     }
 }

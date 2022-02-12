@@ -13,9 +13,7 @@ public class EventLoopExamples {
      * Listing 7.1 Executing tasks in an event loop
      * */
     public static void executeTaskInEventLoop() {
-        boolean terminated = true;
-        //...
-        while (!terminated) {
+        while (true) {
             List<Runnable> readyEvents = blockUntilEventsReady();
             for (Runnable ev: readyEvents) {
                 ev.run();
@@ -24,14 +22,11 @@ public class EventLoopExamples {
     }
 
     private static final List<Runnable> blockUntilEventsReady() {
-        return Collections.<Runnable>singletonList(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        return Collections.singletonList(() -> {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         });
     }

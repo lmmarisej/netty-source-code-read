@@ -23,18 +23,17 @@ public class BootstrapWithInitializer {
         ServerBootstrap bootstrap = new ServerBootstrap();
         bootstrap.group(new NioEventLoopGroup(), new NioEventLoopGroup())
             .channel(NioServerSocketChannel.class)
-            .childHandler(new ChannelInitializerImpl());
+            .childHandler(new ChannelInitializerImpl());        // 注册一个ChannelInitializer实例，用来设置ChannelPipeline
         ChannelFuture future = bootstrap.bind(new InetSocketAddress(8080));
         future.sync();
     }
 
     final class ChannelInitializerImpl extends ChannelInitializer<Channel> {
         @Override
-        protected void initChannel(Channel ch) throws Exception {
+        protected void initChannel(Channel ch) {
             ChannelPipeline pipeline = ch.pipeline();
             pipeline.addLast(new HttpClientCodec());
             pipeline.addLast(new HttpObjectAggregator(Integer.MAX_VALUE));
-
         }
     }
 }

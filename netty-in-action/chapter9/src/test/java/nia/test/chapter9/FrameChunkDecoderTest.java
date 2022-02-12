@@ -25,13 +25,12 @@ public class FrameChunkDecoderTest {
         }
         ByteBuf input = buf.duplicate();
 
-        EmbeddedChannel channel = new EmbeddedChannel(
-            new FrameChunkDecoder(3));
+        EmbeddedChannel channel = new EmbeddedChannel(new FrameChunkDecoder(3));
 
         assertTrue(channel.writeInbound(input.readBytes(2)));
         try {
-            channel.writeInbound(input.readBytes(4));
-            Assert.fail();
+            channel.writeInbound(input.readBytes(4));       // 写大了，必定出现异常
+            Assert.fail();      // 一定不会走这里
         } catch (TooLongFrameException e) {
             // expected exception
         }
@@ -39,11 +38,11 @@ public class FrameChunkDecoderTest {
         assertTrue(channel.finish());
 
         // Read frames
-        ByteBuf read = (ByteBuf) channel.readInbound();
+        ByteBuf read = channel.readInbound();
         assertEquals(buf.readSlice(2), read);
         read.release();
 
-        read = (ByteBuf) channel.readInbound();
+        read = channel.readInbound();
         assertEquals(buf.skipBytes(4).readSlice(3), read);
         read.release();
         buf.release();

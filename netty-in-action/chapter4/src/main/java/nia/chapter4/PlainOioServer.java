@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Listing 4.1 Blocking networking without Netty
@@ -13,20 +14,18 @@ import java.nio.charset.Charset;
  */
 public class PlainOioServer {
     public void serve(int port) throws IOException {
-        final ServerSocket socket = new ServerSocket(port);
+        final ServerSocket socket = new ServerSocket(1222);
         try {
             for(;;) {
                 final Socket clientSocket = socket.accept();
-                System.out.println(
-                        "Accepted connection from " + clientSocket);
+                System.out.println("Accepted connection from " + clientSocket);
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         OutputStream out;
                         try {
                             out = clientSocket.getOutputStream();
-                            out.write("Hi!\r\n".getBytes(
-                                    Charset.forName("UTF-8")));
+                            out.write("Hi!\r\n".getBytes(StandardCharsets.UTF_8));
                             out.flush();
                             clientSocket.close();
                         } catch (IOException e) {
@@ -44,5 +43,9 @@ public class PlainOioServer {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) throws IOException {
+        new PlainOioServer().serve(1222);
     }
 }

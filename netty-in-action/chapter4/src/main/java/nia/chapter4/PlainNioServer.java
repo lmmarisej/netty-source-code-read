@@ -23,12 +23,12 @@ public class PlainNioServer {
         ServerSocket ss = serverChannel.socket();
         InetSocketAddress address = new InetSocketAddress(port);
         ss.bind(address);
-        Selector selector = Selector.open();
-        serverChannel.register(selector, SelectionKey.OP_ACCEPT);
+        Selector selector = Selector.open();        // 打开selector用于处理Channel
+        serverChannel.register(selector, SelectionKey.OP_ACCEPT);       // 注册到selector，以接收连接
         final ByteBuffer msg = ByteBuffer.wrap("Hi!\r\n".getBytes());
         for (;;){
             try {
-                selector.select();
+                selector.select();          // 阻塞等到下一个事件
             } catch (IOException ex) {
                 ex.printStackTrace();
                 //handle exception
@@ -41,25 +41,18 @@ public class PlainNioServer {
                 iterator.remove();
                 try {
                     if (key.isAcceptable()) {
-                        ServerSocketChannel server =
-                                (ServerSocketChannel) key.channel();
+                        ServerSocketChannel server = (ServerSocketChannel) key.channel();
                         SocketChannel client = server.accept();
                         client.configureBlocking(false);
-                        client.register(selector, SelectionKey.OP_WRITE |
-                                SelectionKey.OP_READ, msg.duplicate());
-                        System.out.println(
-                                "Accepted connection from " + client);
+                        client.register(selector, SelectionKey.OP_WRITE | SelectionKey.OP_READ, msg.duplicate());
+                        System.out.println("Accepted connection from " + client);
                     }
                     if (key.isWritable()) {
-                        SocketChannel client =
-                                (SocketChannel) key.channel();
-                        ByteBuffer buffer =
-                                (ByteBuffer) key.attachment();
-                        while (buffer.hasRemaining()) {
-                            if (client.write(buffer) == 0) {
+                        SocketChannel client = (SocketChannel) key.channel();
+                        ByteBuffer buffer = (ByteBuffer) key.attachment();
+                        while (buffer.hasRemaining())
+                            if (client.write(buffer) == 0)
                                 break;
-                            }
-                        }
                         client.close();
                     }
                 } catch (IOException ex) {
